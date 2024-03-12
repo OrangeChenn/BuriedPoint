@@ -1,0 +1,5 @@
+add_executable(buried_example_static BuriedExample.cc)
+target_link_libraries(buried_example_static Buried_static)
+
+add_executable(buried_example_shared BuriedExample.cc)
+target_link_libraries(buried_example_shared Buried_shared)
