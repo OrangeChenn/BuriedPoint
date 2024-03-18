@@ -1,7 +1,7 @@
 # 表示项目中的头文件只会被包含一次
 include_guard(GLOBAL)
 
-include_directories(. third_party third_party/spdlog/include third_party/boost third_party/mbedtls/include)
+include_directories(. third_party third_party/sqlite third_party/spdlog/include third_party/boost third_party/mbedtls/include)
 
 add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE)
 
@@ -10,7 +10,10 @@ add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE)
 add_subdirectory(third_party/spdlog)
 add_subdirectory(third_party/mbedtls/library)
 
+# set(DB_SRCS third_party/sqlite/sqlite3.c database/database.cc)
+
 set(BURIED_SRCS
+    ${DB_SRCS}
     Buried.cc
     BuriedCore.cc)
 
