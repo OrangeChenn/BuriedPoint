@@ -10,10 +10,11 @@ add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE)
 add_subdirectory(third_party/spdlog)
 add_subdirectory(third_party/mbedtls/library)
 
-# set(DB_SRCS third_party/sqlite/sqlite3.c database/database.cc)
+set(DB_SRCS third_party/sqlite/sqlite3.c database/database.cc)
 
 set(BURIED_SRCS
     ${DB_SRCS}
+    crypt/Crypt.cc
     Buried.cc
     BuriedCore.cc)
 
