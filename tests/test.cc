@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "include/Buried.h"
+#include "include/buried.h"
 
 TEST(BuriedBasicTest, Test1) { BuriedCreate("/home/chen/Code/C++/BuriedPoint/project/BuriedPoint"); }
 

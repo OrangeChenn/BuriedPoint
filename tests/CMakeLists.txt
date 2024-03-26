@@ -13,4 +13,4 @@ set(TEST_SRC
     test.cc)
 
 add_executable(buried_test ${TEST_SRC})
-target_link_libraries(buried_test Buried_static gtest)
+target_link_libraries(buried_test buried_static gtest)

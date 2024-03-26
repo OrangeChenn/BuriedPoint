@@ -14,11 +14,12 @@ set(DB_SRCS third_party/sqlite/sqlite3.c database/database.cc)
 
 set(BURIED_SRCS
     ${DB_SRCS}
-    crypt/Crypt.cc
-    Buried.cc
-    BuriedCore.cc)
+    crypt/crypt.cc
+    context/context.cc
+    buried.cc
+    buried_core.cc)
 
-set(MODULE_NAME "Buried")
+set(MODULE_NAME "buried")
 
 message(STATUS "libs ${LIBS}")
 
@@ -33,9 +34,3 @@ if(BUILD_BURIED_STATIC_LIBS)
     add_library(${MODULE_NAME}_static STATIC ${BURIED_SRCS})
     target_link_libraries(${MODULE_NAME}_static PRIVATE ${LIBS} spdlog mbedtls_static)
 endif()
-
-# 编译可执行文件
-# if(BUILD_BURIED_EXE)
-#     add_executable(${MODULE_NAME} ${BURIED_SRCS})
-#     target_link_libraries(${MODULE_NAME} PRIVATE ${LIBS})
-# endif()

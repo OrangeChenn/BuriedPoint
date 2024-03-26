@@ -7,8 +7,8 @@
 #include <memory>
 #include <string>
 
-#include "BuriedCommon.h"
-#include "include/Buried.h"
+#include "buried_common.h"
+#include "include/buried.h"
 
 namespace spdlog {
     class logger;

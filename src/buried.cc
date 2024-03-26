@@ -1,8 +1,8 @@
-#include "include/Buried.h"
+#include "include/buried.h"
 
 #include <iostream>
 
-#include "BuriedCore.h"
+#include "buried_core.h"
 
 extern "C" {
 int BuriedTest() {

@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "../src/crypt/Crypt.h"
+#include "../src/crypt/crypt.h"
 
 #include <string>
 #include <iostream>

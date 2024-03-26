@@ -1,4 +1,4 @@
-#include "include/Buried.h"
+#include "include/buried.h"
 
 int main(int argc, char** argv) {
     BuriedTest();
