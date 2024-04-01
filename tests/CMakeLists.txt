@@ -8,6 +8,7 @@ set(TEST_SRC
     # ../src/third_party/sqlite/sqlite3.c
     # ../src/database/database.cc
     # ../src/crypt/Crypt.cc
+    test_common_server.cc
     test_crypt.cc
     test_db.cc
     test.cc)

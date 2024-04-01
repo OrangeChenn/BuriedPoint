@@ -3,9 +3,11 @@
 #include <cstdio>
 #include <ctime>
 
+#include <algorithm>
 #include <chrono>
 #include <filesystem>
 #include <fstream>
+#include <random>
 #include <sys/utsname.h>
 
 #ifdef __WIN32
@@ -96,7 +98,7 @@ static std::string GetSystemVersion() {
     return system_version;
 #else
     struct utsname os_info;
-    if(uname(&utsname) != 0) {
+    if(uname(&os_info) != 0) {
         return "";
     }
     std::string system_version = os_info.release;
@@ -112,7 +114,7 @@ static std::string GetDeviceName() {
     std::string device_name = buf;
     return device_name;
 #else
-    FILE file = fopen("/proc/sys/kernel/hostname", "r");
+    FILE* file = fopen("/proc/sys/kernel/hostname", "r");
     if(file) {
         char device_name[256];
         if(fgets(device_name, sizeof(device_name), file)) {

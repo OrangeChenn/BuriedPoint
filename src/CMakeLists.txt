@@ -16,6 +16,7 @@ set(DB_SRCS third_party/sqlite/sqlite3.c database/database.cc)
 
 set(BURIED_SRCS
     ${DB_SRCS}
+    common/common_service.cc
     crypt/crypt.cc
     context/context.cc
     buried.cc
