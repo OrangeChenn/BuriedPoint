@@ -29,7 +29,7 @@ private:
     void NextCycle();
     BuriedDb::Data MakeDbData(const buried::BuriedData data);
     std::string GenReportData(const std::vector<buried::BuriedDb::Data>& datas);
-    bool ReportData(const std::stinrg& data);
+    bool ReportData(const std::string& data);
 private:
     spdlog::logger logger_;
     CommonService common_service_;
@@ -125,11 +125,42 @@ std::string BuriedReportImpl::GenReportData(const std::vector<buried::BuriedDb::
 
 bool BuriedReportImpl::ReportData(const std::string& data) {
     buried::HttpReport http_report(logger_);
-    return http_report.Host("")
-        .Topic("")
-        .Port("")
+    return http_report.Host(common_service_.host)
+        .Topic(common_service_.topic)
+        .Port(common_service_.port)
         .Body(data)
         .Report();
+}
+
+BuriedDb::Data BuriedDbImpl::MakeDbData(const buried::BuriedData data) {
+BuriedDb::Data db_data;
+    db_data.id = -1;
+    db_data.priority = data.priority;
+    db_data.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
+                            std::chrono::system_clock::now().time_since_epoch())
+                            .count();
+    nlohmann::json json_data;
+    json_data["title"] = data.title;
+    json_data["data"] = data.data;
+    json_data["user_id"] = common_service_.user_id;
+    json_data["app_version"] = common_service_.app_version;
+    json_data["app_name"] = common_service_.app_name;
+    json_data["custom_data"] = common_service_.custom_data;
+    json_data["system_version"] = common_service_.system_version;
+    json_data["device_name"] = common_service_.device_name;
+    json_data["device_id"] = common_service_.device_id;
+    json_data["buried_version"] = common_service_.buried_version;
+    json_data["lifecycle_id"] = common_service_.lifecycle_id;
+    json_data["priority"] = data.priority;
+    json_data["timestamp"] = CommonService::GetNowDate();
+    json_data["process_time"] = CommonService::GetProcessTime();
+    json_data["report_id"] = CommonService::GetRandomId();
+    std::string report_data = crypt_->Encrypt(json_data.dump());
+    db_data.content = std::vector<char>(report_data.begin(), report_data.end());
+    SPDLOG_LOGGER_INFO(logger_, "BuriedReportImpl insert data size: {}",
+                        db_data.content.size());
+
+    return db_data;
 }
 
 // BuriedReport

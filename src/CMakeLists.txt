@@ -5,6 +5,8 @@ include_directories(. third_party third_party/sqlite third_party/spdlog/include 
 
 add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE)
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/buried_config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/buried_config.h)
+
 # 一定要定义这个宏，否则会导致Custom Formatting功能异常
 # 详见 https://github.com/gabime/spdlog/wiki/3.-Custom-formatting
 add_subdirectory(third_party/spdlog)
