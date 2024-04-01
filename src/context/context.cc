@@ -37,4 +37,4 @@ Context::~Context() {
     }
 }
 
-}
+} // namespace buried
