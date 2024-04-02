@@ -30,7 +30,7 @@ public:
     void InsertData(const BuriedData& data);
 
 private:
-    std::unique_ptr<BuriedReportImpl> ipml_;
+    std::unique_ptr<BuriedReportImpl> impl_;
 };
 
 } // namespace buried

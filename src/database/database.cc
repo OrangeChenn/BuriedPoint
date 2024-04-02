@@ -61,8 +61,8 @@ private:
     std::unique_ptr<DBStorage> storage_;
 };
 
-BuriedDb::BuriedDb(const std::string& path) 
-    : impl_(std::make_unique<BuriedDbImpl>(path)) {}
+BuriedDb::BuriedDb(const std::string& db_path) 
+    : impl_(std::make_unique<BuriedDbImpl>(db_path)) {}
 
 BuriedDb::~BuriedDb() {}
 

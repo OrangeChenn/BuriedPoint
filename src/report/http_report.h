@@ -12,7 +12,7 @@ class HttpReport {
 public:
     explicit HttpReport(std::shared_ptr<spdlog::logger> logger);
 
-    HttpReport& Host(const string& host) {
+    HttpReport& Host(const std::string& host) {
         host_ = host;
         return *this;
     }

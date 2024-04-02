@@ -14,7 +14,7 @@
 
 namespace buried{
 
-static const kDbName = "buired.db";
+static const std::string kDbName = "buired.db";
 class BuriedReportImpl {
 public:
     BuriedReportImpl(std::shared_ptr<spdlog::logger> logger,
@@ -27,11 +27,11 @@ private:
     void Init();
     void ReportCache();
     void NextCycle();
-    BuriedDb::Data MakeDbData(const buried::BuriedData data);
+    BuriedDb::Data MakeDbData(const buried::BuriedData& data);
     std::string GenReportData(const std::vector<buried::BuriedDb::Data>& datas);
     bool ReportData(const std::string& data);
 private:
-    spdlog::logger logger_;
+    std::shared_ptr<spdlog::logger> logger_;
     CommonService common_service_;
     std::string work_path_;
     std::unique_ptr<buried::Crypt> crypt_;
@@ -46,12 +46,12 @@ BuriedReportImpl::BuriedReportImpl(std::shared_ptr<spdlog::logger> logger,
       common_service_(std::move(common_service)),
       work_path_(std::move(work_path)) {
     if(logger_ == nullptr) {
-        logger_ = spdlog::stdout_color_mt("buried"):
+        logger_ = spdlog::stdout_color_mt("buried");
     }
-    std::string key = buried::AESCrypt::GetKey();
-    crypt_ = std::make_unique<buried::Crypt>(new buried::AESCrypt(key));
+    std::string key = buried::AESCrypt::GetKey("salt", "password");
+    crypt_ = std::make_unique<buried::AESCrypt>(key);
     SPDLOG_LOGGER_INFO(logger_, "BuriedReportImpl init success.");
-    buried::Context::GetGlobalContext().GetReportStrand.post([this]() { Init(); });
+    buried::Context::GetGlobalContext().GetReportStrand().post([this]() { Init(); });
 }
 
 void BuriedReportImpl::Start() {
@@ -60,7 +60,7 @@ void BuriedReportImpl::Start() {
         buried::Context::GetGlobalContext().GetMainContext(),
         boost::posix_time::seconds(5)
     );
-    timer_.async_wait(buried::Context::GetGlobalContext().GetReportStrand().wrap(
+    timer_->async_wait(buried::Context::GetGlobalContext().GetReportStrand().wrap(
         [this](const boost::system::error_code& ec) {
             if(ec) {
                 logger_->error("BuriedReportImpl::Start error: {}", ec.message());
@@ -78,12 +78,12 @@ void BuriedReportImpl::InsertData(const BuriedData& data) {
 void BuriedReportImpl::Init() {
     std::filesystem::path db_path = work_path_;
     SPDLOG_LOGGER_INFO(logger_, "BuriedReportImpl init database path: {}", db_path.string());
-    db_path \= kDbName;
-    db_ = std::make_unique<buried::BuriedDb>(new buried::BuriedDb(db_path.string()));
+    db_path /= kDbName;
+    db_ = std::make_unique<buried::BuriedDb>(db_path.string());
 }
 
 void BuriedReportImpl::ReportCache() {
-    SPDLOG_LOGGER_INFO("BuriedReportImpl ReportCache.");
+    SPDLOG_LOGGER_INFO(logger_, "BuriedReportImpl ReportCache.");
     if(data_caches_.empty()) {
         data_caches_ = db_->QueryData(10);
     }
@@ -103,11 +103,11 @@ void BuriedReportImpl::NextCycle() {
     timer_->async_wait([this](const boost::system::error_code& ec) {
         if(ec) {
             logger_->error("BuriedReportImpl NextCycle error: {}", ec.message());
-        } else [
+        } else {
             buried::Context::GetGlobalContext().GetReportStrand().post([this]{
                 ReportCache();
             });
-        ]
+        }
     });
 }
 
@@ -132,8 +132,8 @@ bool BuriedReportImpl::ReportData(const std::string& data) {
         .Report();
 }
 
-BuriedDb::Data BuriedDbImpl::MakeDbData(const buried::BuriedData data) {
-BuriedDb::Data db_data;
+BuriedDb::Data BuriedReportImpl::MakeDbData(const buried::BuriedData& data) {
+    BuriedDb::Data db_data;
     db_data.id = -1;
     db_data.priority = data.priority;
     db_data.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -155,7 +155,7 @@ BuriedDb::Data db_data;
     json_data["timestamp"] = CommonService::GetNowDate();
     json_data["process_time"] = CommonService::GetProcessTime();
     json_data["report_id"] = CommonService::GetRandomId();
-    std::string report_data = crypt_->Encrypt(json_data.dump());
+    std::string report_data = crypt_->EnCrypt(json_data.dump());
     db_data.content = std::vector<char>(report_data.begin(), report_data.end());
     SPDLOG_LOGGER_INFO(logger_, "BuriedReportImpl insert data size: {}",
                         db_data.content.size());
@@ -173,10 +173,10 @@ BuriedReport::BuriedReport(std::shared_ptr<spdlog::logger> logger,
 
 BuriedReport::~BuriedReport() {}
 
-void BuriedReport::Start() { ipml_->Start(); }
+void BuriedReport::Start() { impl_->Start(); }
 
 void BuriedReport::InsertData(const BuriedData& data) {
-    ipml_->InsertData(data);
+    impl_->InsertData(data);
 }
 
 } // namespace buried

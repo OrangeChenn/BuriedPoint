@@ -1,17 +1,17 @@
 #include "http_report.h"
 
-#include "../third_party/boost/boost/asio/connect.hpp"
-#include "../third_party/boost/boost/asio/io_context.hpp"
-#include "../third_party/boost/boost/asio/ip/tcp.hpp"
-#include "../third_party/boost/boost/beast/core.hpp"
-#include "../third_party/boost/boost/beast/http.hpp"
-#include "../third_party/boost/boost/version.hpp"
-#include "../third_party/spdlog/include/spdlog/spdlog.h"
+#include "boost/asio/connect.hpp"
+#include "boost/asio/io_context.hpp"
+#include "boost/asio/ip/tcp.hpp"
+#include "boost/beast/core.hpp"
+#include "boost/beast/http.hpp"
+#include "boost/beast/version.hpp"
+#include "spdlog/spdlog.h"
 
 namespace beast = boost::beast;     // boost/beast.hpp
 namespace http = beast::http;       // boost/beast/http.hpp
 namespace net = boost::asio;        // boost/asio.hpp
-namespace tcp net::ip::tcp          // boost/asio/ip/tcp.hpp
+using tcp = net::ip::tcp;          // boost/asio/ip/tcp.hpp
 
 namespace buried {
 
@@ -28,13 +28,13 @@ bool HttpReport::Report() {
         beast::tcp_stream stream(ioc);
 
         boost::asio::ip::tcp::resolver::query query(host_, port_);
-        auto const results = resolver.query(query);
+        auto const results = resolver.resolve(query);
         stream.connect(results);
 
         http::request<http::string_body> req{http::verb::post, topic_, version};
         req.set(http::field::host, host_);
         req.set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
-        req.set(http::content_type, "application/json");
+        req.set(http::field::content_type, "application/json");
         req.body() = body_;
         req.prepare_payload();
         http::write(stream, req);
